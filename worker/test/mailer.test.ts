@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import nodemailer from 'nodemailer';
-import { buildReminderEmail, sendReminderEmail } from '../src/mailer.js';
+import { buildReminderEmail, createMailTransport, sendReminderEmail } from '../src/mailer.js';
 import type { WorkerConfig } from '../src/config.js';
 import type { UpcomingReservation } from '../src/apiClient.js';
 
@@ -41,6 +41,18 @@ describe('buildReminderEmail', () => {
     expect(html).toContain('&amp;');
     expect(html).toContain('&quot;onmouseover=&quot;');
     expect(html).toContain('&#39;Brien&#39;s');
+  });
+});
+
+describe('createMailTransport', () => {
+  it('omits the auth option entirely when smtpUser is empty', () => {
+    const transport = createMailTransport({ ...config, smtpUser: '', smtpPass: '' });
+    expect(transport.options).not.toHaveProperty('auth');
+  });
+
+  it('includes the auth option when smtpUser is set', () => {
+    const transport = createMailTransport({ ...config, smtpUser: 'user', smtpPass: 'pass' });
+    expect(transport.options).toMatchObject({ auth: { user: 'user', pass: 'pass' } });
   });
 });
 

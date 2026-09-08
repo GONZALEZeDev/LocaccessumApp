@@ -1,13 +1,16 @@
-import nodemailer, { type Transporter, type SentMessageInfo } from 'nodemailer';
+import nodemailer, { type Transporter, type SentMessageInfo, type SMTPTransportOptions } from 'nodemailer';
 import type { WorkerConfig } from './config.js';
 import type { UpcomingReservation } from './apiClient.js';
 
 export function createMailTransport(config: WorkerConfig): Transporter {
-  return nodemailer.createTransport({
+  const transportConfig: SMTPTransportOptions = {
     host: config.smtpHost,
     port: config.smtpPort,
-    auth: { user: config.smtpUser, pass: config.smtpPass },
-  });
+  };
+  if (config.smtpUser) {
+    transportConfig.auth = { user: config.smtpUser, pass: config.smtpPass };
+  }
+  return nodemailer.createTransport(transportConfig);
 }
 
 function escapeHtml(value: string): string {

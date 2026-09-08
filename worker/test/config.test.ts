@@ -34,4 +34,17 @@ describe('loadConfig', () => {
   it('throws when SMTP_PORT is not a positive integer', () => {
     expect(() => loadConfig({ ...validEnv, SMTP_PORT: 'not-a-number' })).toThrow(/SMTP_PORT/);
   });
+
+  it('succeeds with SMTP_USER/SMTP_PASS absent from env, defaulting them to an empty string', () => {
+    const { SMTP_USER, SMTP_PASS, ...rest } = validEnv;
+    const config = loadConfig(rest);
+    expect(config.smtpUser).toBe('');
+    expect(config.smtpPass).toBe('');
+  });
+
+  it('accepts SMTP_USER/SMTP_PASS present but set to an empty string', () => {
+    const config = loadConfig({ ...validEnv, SMTP_USER: '', SMTP_PASS: '' });
+    expect(config.smtpUser).toBe('');
+    expect(config.smtpPass).toBe('');
+  });
 });

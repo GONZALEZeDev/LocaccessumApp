@@ -15,8 +15,6 @@ const REQUIRED_KEYS = [
   'INTERNAL_API_KEY',
   'SMTP_HOST',
   'SMTP_PORT',
-  'SMTP_USER',
-  'SMTP_PASS',
   'MAIL_FROM',
 ] as const;
 
@@ -41,8 +39,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): WorkerConfig {
     internalApiKey: env.INTERNAL_API_KEY!,
     smtpHost: env.SMTP_HOST!,
     smtpPort,
-    smtpUser: env.SMTP_USER!,
-    smtpPass: env.SMTP_PASS!,
+    smtpUser: env.SMTP_USER ?? '',
+    smtpPass: env.SMTP_PASS ?? '',
     mailFrom: env.MAIL_FROM!,
     reminderWindowHours,
     cronSchedule: env.CRON_SCHEDULE ?? '0 * * * *',

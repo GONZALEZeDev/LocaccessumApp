@@ -68,6 +68,13 @@ Variables d'environnement (voir `.env.example`) :
 | `Jwt__Issuer` / `Jwt__Audience` / `Jwt__Secret` / `Jwt__LifetimeHours` | Paramètres JWT (durée de vie 8h, pas de rafraîchissement) |
 | `InternalApiKey` | Clé d'API pour les endpoints internes du worker de rappels |
 | `Cors__FrontOrigin` | Origine CORS autorisée pour le (futur) frontend, par défaut `http://localhost:5173` |
+| `SMTP_HOST` | Serveur SMTP pour l'envoi des rappels par e-mail (Mailtrap sandbox par défaut) |
+| `SMTP_PORT` | Port du serveur SMTP |
+| `SMTP_USER` | Identifiant SMTP (optionnel — vide désactive l'authentification SMTP) |
+| `SMTP_PASS` | Mot de passe SMTP (optionnel, utilisé avec `SMTP_USER`) |
+| `MAIL_FROM` | Adresse d'expéditeur des e-mails de rappel |
+| `REMINDER_WINDOW_HOURS` | Fenêtre (en heures) avant le début d'une réservation pour déclencher le rappel, 24 par défaut |
+| `CRON_SCHEDULE` | Expression cron de la planification d'exécution du worker, toutes les heures par défaut |
 
 ## Worker de rappels
 
@@ -87,8 +94,11 @@ npm install
 npm run build && npm start
 ```
 
-Avec `docker compose up`, le worker lit directement les variables du `.env` racine du dépôt (voir
-`.env.example`).
+Avec `docker compose up`, c'est `docker-compose.yml` qui injecte des variables nommées dans le
+conteneur du worker : la plupart proviennent du `.env` racine (`SMTP_HOST`, `SMTP_PORT`,
+`SMTP_USER`, `SMTP_PASS`, `MAIL_FROM`, `REMINDER_WINDOW_HOURS`, `CRON_SCHEDULE`), `API_BASE_URL`
+est fixé en dur à `http://api:8080`, et `INTERNAL_API_KEY` est défini à partir de la valeur
+`InternalApiKey` du `.env` racine (le même secret partagé que lit l'API).
 
 Point important : `INTERNAL_API_KEY` (worker) doit être **identique** à `InternalApiKey` (API
 backend), sinon les appels du worker vers l'API échoueront avec une erreur d'authentification.
@@ -168,6 +178,13 @@ Environment variables (see `.env.example`):
 | `Jwt__Issuer` / `Jwt__Audience` / `Jwt__Secret` / `Jwt__LifetimeHours` | JWT auth settings (8h lifetime, no refresh) |
 | `InternalApiKey` | API key for the internal reminder-worker endpoints |
 | `Cors__FrontOrigin` | Allowed CORS origin for the (future) frontend, default `http://localhost:5173` |
+| `SMTP_HOST` | SMTP server for sending reminder e-mails (Mailtrap sandbox by default) |
+| `SMTP_PORT` | SMTP server port |
+| `SMTP_USER` | SMTP username (optional — empty disables SMTP authentication) |
+| `SMTP_PASS` | SMTP password (optional, paired with `SMTP_USER`) |
+| `MAIL_FROM` | Sender address for reminder e-mails |
+| `REMINDER_WINDOW_HOURS` | Hours-ahead window before a reservation start to trigger the reminder, default 24 |
+| `CRON_SCHEDULE` | Cron expression for the worker's run schedule, hourly by default |
 
 ## Reminder worker
 
@@ -186,8 +203,11 @@ npm install
 npm run build && npm start
 ```
 
-With `docker compose up`, the worker reads its variables directly from the repo root's `.env`
-(see `.env.example`).
+With `docker compose up`, `docker-compose.yml` injects specific named variables into the worker
+container: most come from the root `.env` (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`,
+`MAIL_FROM`, `REMINDER_WINDOW_HOURS`, `CRON_SCHEDULE`), `API_BASE_URL` is hardcoded to
+`http://api:8080`, and `INTERNAL_API_KEY` is set from the root `.env`'s `InternalApiKey` value
+(the same shared secret the API reads).
 
 Important: `INTERNAL_API_KEY` (worker) must **match** `InternalApiKey` (backend API) exactly, or
 the worker's calls to the API will fail authentication.
