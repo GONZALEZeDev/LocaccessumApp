@@ -3,9 +3,14 @@
 Système d'inventaire et de réservation de matériel partagé : s'inscrire, rejoindre un
 inventaire, et réserver des unités de matériel sans double réservation.
 
-Ce dépôt contient **le backend et le worker de rappels** — une API Web .NET et sa couche de
-données, ainsi qu'un service Node.js qui envoie des rappels par e-mail. Il n'y a pas encore de
-frontend ; c'est un plan séparé, pas encore construit.
+> ⚠️ **Ceci est une première version, une ébauche encore en cours de développement.** Les trois
+> composants (backend, worker, frontend) sont fonctionnels de bout en bout, mais le projet n'est
+> pas finalisé — l'interface reste volontairement minimale, et le durcissement production
+> (rotation des secrets, TLS, etc.) n'a pas encore été fait.
+
+Ce dépôt contient **le backend, le worker de rappels et le frontend** — une API Web .NET et sa
+couche de données, un service Node.js qui envoie des rappels par e-mail, et une application web
+React/TypeScript.
 
 ## Prérequis
 
@@ -107,6 +112,50 @@ Par défaut, le SMTP pointe vers un bac à sable Mailtrap (`sandbox.smtp.mailtra
 e-mail réel n'est envoyé aux utilisateurs pendant le développement ; les e-mails sont capturés par
 Mailtrap pour inspection.
 
+## Frontend
+
+Le frontend (`frontend/`) est une application monopage (SPA) Vite + React + TypeScript qui
+consomme l'API backend. Elle permet de s'inscrire, se connecter, créer et rejoindre des
+inventaires, gérer le matériel (avec regroupement automatique des unités identiques en piles),
+réserver des unités, consulter et annuler ses réservations, gérer les membres et les invitations
+d'un inventaire.
+
+Pour la lancer seule, en dehors de `docker compose up`, contre un backend qui tourne déjà :
+
+```bash
+cd frontend
+cp .env.example .env
+npm install
+npm run dev
+```
+
+L'application est alors disponible sur `http://localhost:5173`.
+
+Avec `docker compose up`, le frontend est construit dans une image Docker multi-étage (build
+Vite puis service statique via `nginx:alpine`) et exposé sur le port `5173`. L'URL de l'API
+(`VITE_API_BASE_URL`) est figée au moment de la construction de l'image — c'est le modèle de Vite
+pour les variables d'environnement statiques — à `http://localhost:8080`, c'est-à-dire l'adresse
+vue par le navigateur de l'utilisateur, pas l'adresse interne au réseau Docker utilisée par le
+worker.
+
+Le frontend est volontairement simple : thème Tailwind vert pastel, pas d'effets client lourds
+(pas d'animations complexes, pas de gestion d'état globale au-delà du contexte d'authentification),
+conformément aux objectifs de conception du plan.
+
+### Captures d'écran
+
+| Inscription | Tableau de bord |
+|---|---|
+| ![Écran d'inscription](docs/screenshots/01-register.png) | ![Tableau de bord avec un inventaire](docs/screenshots/02-dashboard.png) |
+
+| Équipement (avec stacking) | Réservations |
+|---|---|
+| ![Onglet Équipement, une pile dépliée montrant deux unités identiques](docs/screenshots/04-equipment-stack-expanded.png) | ![Onglet Réservations avec une réservation active](docs/screenshots/05-reservations.png) |
+
+| Membres |
+|---|
+| ![Onglet Membres avec le propriétaire de l'inventaire](docs/screenshots/06-members.png) |
+
 ---
 
 <!-- English version below -->
@@ -116,9 +165,14 @@ Mailtrap pour inspection.
 Shared-equipment inventory and booking system: register, join an inventory, and reserve
 equipment stacks without double-booking.
 
-This repository contains **the backend and the reminder worker** — a .NET Web API and its data
-layer, plus a Node.js service that sends e-mail reminders. There is no frontend yet; that's a
-separate, not-yet-built plan.
+> ⚠️ **This is an early version, a draft still under active development.** All three components
+> (backend, worker, frontend) work end to end, but the project isn't finished — the UI stays
+> intentionally minimal, and production hardening (secret rotation, TLS, etc.) hasn't been done
+> yet.
+
+This repository contains **the backend, the reminder worker, and the frontend** — a .NET Web API
+and its data layer, a Node.js service that sends e-mail reminders, and a React/TypeScript web
+app.
 
 ## Prerequisites
 
@@ -214,3 +268,45 @@ the worker's calls to the API will fail authentication.
 
 By default, SMTP points at a Mailtrap sandbox (`sandbox.smtp.mailtrap.io`) — no real e-mails are
 sent to users during development; e-mails are captured by Mailtrap for inspection.
+
+## Frontend
+
+The frontend (`frontend/`) is a Vite + React + TypeScript single-page app that consumes the
+backend API. It supports registering, logging in, creating and joining inventories, managing
+equipment (with automatic stacking of identical units), reserving units, viewing and cancelling
+reservations, and managing an inventory's members and invitations.
+
+To run it standalone, outside of `docker compose up`, against an already-running backend:
+
+```bash
+cd frontend
+cp .env.example .env
+npm install
+npm run dev
+```
+
+The app is then available at `http://localhost:5173`.
+
+With `docker compose up`, the frontend is built as a multi-stage Docker image (a Vite build,
+then served statically via `nginx:alpine`) and exposed on port `5173`. The API URL
+(`VITE_API_BASE_URL`) is baked in at image build time — per Vite's static-env-var model — as
+`http://localhost:8080`, i.e. the address as seen by the user's browser, not the Docker-network-
+internal address the worker uses.
+
+The frontend is intentionally simple: a pastel-green Tailwind theme, no heavy client-side effects
+(no complex animations, no global state management beyond the auth context), per this plan's
+design goals.
+
+### Screenshots
+
+| Register | Dashboard |
+|---|---|
+| ![Registration screen](docs/screenshots/01-register.png) | ![Dashboard with one inventory](docs/screenshots/02-dashboard.png) |
+
+| Equipment (with stacking) | Reservations |
+|---|---|
+| ![Equipment tab, one stack expanded showing two identical units](docs/screenshots/04-equipment-stack-expanded.png) | ![Reservations tab with an active reservation](docs/screenshots/05-reservations.png) |
+
+| Members |
+|---|
+| ![Members tab with the inventory's owner](docs/screenshots/06-members.png) |
