@@ -1,0 +1,9 @@
+**/bin/
+**/obj/
+**/*.user
+**/.vs/
+**/TestResults/
+.git/
+.worktrees/
+.superpowers/
+node_modules/

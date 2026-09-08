@@ -1,0 +1,18 @@
+# Worktrees and agent scratch
+.worktrees/
+.superpowers/
+
+# Build output
+bin/
+obj/
+[Bb]in/
+[Oo]bj/
+*.user
+TestResults/
+.vs/
+
+# Node
+node_modules/
+
+# Env
+.env
