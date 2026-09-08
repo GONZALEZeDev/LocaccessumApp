@@ -3,9 +3,14 @@
 Système d'inventaire et de réservation de matériel partagé : s'inscrire, rejoindre un
 inventaire, et réserver des unités de matériel sans double réservation.
 
+> ⚠️ **Ceci est une première version, une ébauche encore en cours de développement.** Les trois
+> composants (backend, worker, frontend) sont fonctionnels de bout en bout, mais le projet n'est
+> pas finalisé — l'interface reste volontairement minimale, et le durcissement production
+> (rotation des secrets, TLS, etc.) n'a pas encore été fait.
+
 Ce dépôt contient **le backend, le worker de rappels et le frontend** — une API Web .NET et sa
 couche de données, un service Node.js qui envoie des rappels par e-mail, et une application web
-React/TypeScript. Rien n'est laissé à construire.
+React/TypeScript.
 
 ## Prérequis
 
@@ -137,6 +142,20 @@ Le frontend est volontairement simple : thème Tailwind vert pastel, pas d'effet
 (pas d'animations complexes, pas de gestion d'état globale au-delà du contexte d'authentification),
 conformément aux objectifs de conception du plan.
 
+### Captures d'écran
+
+| Inscription | Tableau de bord |
+|---|---|
+| ![Écran d'inscription](docs/screenshots/01-register.png) | ![Tableau de bord avec un inventaire](docs/screenshots/02-dashboard.png) |
+
+| Équipement (avec stacking) | Réservations |
+|---|---|
+| ![Onglet Équipement, une pile dépliée montrant deux unités identiques](docs/screenshots/04-equipment-stack-expanded.png) | ![Onglet Réservations avec une réservation active](docs/screenshots/05-reservations.png) |
+
+| Membres |
+|---|
+| ![Onglet Membres avec le propriétaire de l'inventaire](docs/screenshots/06-members.png) |
+
 ---
 
 <!-- English version below -->
@@ -146,9 +165,14 @@ conformément aux objectifs de conception du plan.
 Shared-equipment inventory and booking system: register, join an inventory, and reserve
 equipment stacks without double-booking.
 
+> ⚠️ **This is an early version, a draft still under active development.** All three components
+> (backend, worker, frontend) work end to end, but the project isn't finished — the UI stays
+> intentionally minimal, and production hardening (secret rotation, TLS, etc.) hasn't been done
+> yet.
+
 This repository contains **the backend, the reminder worker, and the frontend** — a .NET Web API
 and its data layer, a Node.js service that sends e-mail reminders, and a React/TypeScript web
-app. Nothing is left unbuilt.
+app.
 
 ## Prerequisites
 
@@ -272,3 +296,17 @@ internal address the worker uses.
 The frontend is intentionally simple: a pastel-green Tailwind theme, no heavy client-side effects
 (no complex animations, no global state management beyond the auth context), per this plan's
 design goals.
+
+### Screenshots
+
+| Register | Dashboard |
+|---|---|
+| ![Registration screen](docs/screenshots/01-register.png) | ![Dashboard with one inventory](docs/screenshots/02-dashboard.png) |
+
+| Equipment (with stacking) | Reservations |
+|---|---|
+| ![Equipment tab, one stack expanded showing two identical units](docs/screenshots/04-equipment-stack-expanded.png) | ![Reservations tab with an active reservation](docs/screenshots/05-reservations.png) |
+
+| Members |
+|---|
+| ![Members tab with the inventory's owner](docs/screenshots/06-members.png) |
