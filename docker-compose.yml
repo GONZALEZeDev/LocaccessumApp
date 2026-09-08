@@ -34,5 +34,23 @@ services:
     ports:
       - "8080:8080"
 
+  worker:
+    build:
+      context: ./worker
+    depends_on:
+      api:
+        condition: service_started
+    environment:
+      API_BASE_URL: http://api:8080
+      INTERNAL_API_KEY: ${InternalApiKey}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+      MAIL_FROM: ${MAIL_FROM}
+      REMINDER_WINDOW_HOURS: ${REMINDER_WINDOW_HOURS:-24}
+      CRON_SCHEDULE: ${CRON_SCHEDULE:-0 * * * *}
+    restart: unless-stopped
+
 volumes:
   pgdata:
