@@ -52,5 +52,17 @@ services:
       CRON_SCHEDULE: ${CRON_SCHEDULE:-0 * * * *}
     restart: unless-stopped
 
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: http://localhost:8080
+    depends_on:
+      api:
+        condition: service_started
+    ports:
+      - "5173:80"
+    restart: unless-stopped
+
 volumes:
   pgdata:
