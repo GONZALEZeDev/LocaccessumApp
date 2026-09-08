@@ -3,9 +3,9 @@
 Système d'inventaire et de réservation de matériel partagé : s'inscrire, rejoindre un
 inventaire, et réserver des unités de matériel sans double réservation.
 
-Ce dépôt ne contient actuellement **que le backend** — une API Web .NET et sa couche de
-données. Il n'y a pas encore de frontend ni de worker de rappels ; les deux sont des plans
-séparés, pas encore construits.
+Ce dépôt contient **le backend et le worker de rappels** — une API Web .NET et sa couche de
+données, ainsi qu'un service Node.js qui envoie des rappels par e-mail. Il n'y a pas encore de
+frontend ; c'est un plan séparé, pas encore construit.
 
 ## Prérequis
 
@@ -69,6 +69,34 @@ Variables d'environnement (voir `.env.example`) :
 | `InternalApiKey` | Clé d'API pour les endpoints internes du worker de rappels |
 | `Cors__FrontOrigin` | Origine CORS autorisée pour le (futur) frontend, par défaut `http://localhost:5173` |
 
+## Worker de rappels
+
+Le worker de rappels (`worker/`) est un service Node.js/TypeScript qui tourne indépendamment de
+l'API. Selon une planification horaire (configurable), il interroge l'API pour les réservations
+qui commencent dans la fenêtre à venir (24h par défaut) et envoie un e-mail de rappel à
+l'utilisateur concerné, puis marque la réservation comme « rappel envoyé » pour ne pas la
+renvoyer. Si un envoi échoue, le worker le journalise et continue sans marquer la réservation,
+qui sera automatiquement retentée au passage suivant.
+
+Pour le lancer seul, en dehors de `docker compose up` :
+
+```bash
+cd worker
+cp .env.example .env
+npm install
+npm run build && npm start
+```
+
+Avec `docker compose up`, le worker lit directement les variables du `.env` racine du dépôt (voir
+`.env.example`).
+
+Point important : `INTERNAL_API_KEY` (worker) doit être **identique** à `InternalApiKey` (API
+backend), sinon les appels du worker vers l'API échoueront avec une erreur d'authentification.
+
+Par défaut, le SMTP pointe vers un bac à sable Mailtrap (`sandbox.smtp.mailtrap.io`) — aucun
+e-mail réel n'est envoyé aux utilisateurs pendant le développement ; les e-mails sont capturés par
+Mailtrap pour inspection.
+
 ---
 
 <!-- English version below -->
@@ -78,8 +106,9 @@ Variables d'environnement (voir `.env.example`) :
 Shared-equipment inventory and booking system: register, join an inventory, and reserve
 equipment stacks without double-booking.
 
-This repository currently contains **the backend only** — a .NET Web API and its data layer.
-There is no frontend and no reminder worker yet; both are separate, not-yet-built plans.
+This repository contains **the backend and the reminder worker** — a .NET Web API and its data
+layer, plus a Node.js service that sends e-mail reminders. There is no frontend yet; that's a
+separate, not-yet-built plan.
 
 ## Prerequisites
 
@@ -139,3 +168,29 @@ Environment variables (see `.env.example`):
 | `Jwt__Issuer` / `Jwt__Audience` / `Jwt__Secret` / `Jwt__LifetimeHours` | JWT auth settings (8h lifetime, no refresh) |
 | `InternalApiKey` | API key for the internal reminder-worker endpoints |
 | `Cors__FrontOrigin` | Allowed CORS origin for the (future) frontend, default `http://localhost:5173` |
+
+## Reminder worker
+
+The reminder worker (`worker/`) is a standalone Node.js/TypeScript service. On an hourly schedule
+(configurable), it polls the API for reservations starting within the upcoming window (24h by
+default) and sends a reminder e-mail to the corresponding user, then marks the reservation as
+"reminder sent" so it isn't resent. If a send fails, the worker logs it and moves on without
+marking the reservation, which is retried automatically on the next run.
+
+To run it standalone, outside of `docker compose up`:
+
+```bash
+cd worker
+cp .env.example .env
+npm install
+npm run build && npm start
+```
+
+With `docker compose up`, the worker reads its variables directly from the repo root's `.env`
+(see `.env.example`).
+
+Important: `INTERNAL_API_KEY` (worker) must **match** `InternalApiKey` (backend API) exactly, or
+the worker's calls to the API will fail authentication.
+
+By default, SMTP points at a Mailtrap sandbox (`sandbox.smtp.mailtrap.io`) — no real e-mails are
+sent to users during development; e-mails are captured by Mailtrap for inspection.
