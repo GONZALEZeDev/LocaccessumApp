@@ -1,5 +1,7 @@
 # Locaccessum
 
+[![CI](https://github.com/GONZALEZeDev/LocaccessumApp/actions/workflows/ci.yml/badge.svg)](https://github.com/GONZALEZeDev/LocaccessumApp/actions/workflows/ci.yml)
+
 Système d'inventaire et de réservation de matériel partagé : s'inscrire, rejoindre un
 inventaire, et réserver des unités de matériel sans double réservation.
 
@@ -48,6 +50,12 @@ dotnet test
 
 Docker doit être en cours d'exécution : la suite de tests d'intégration démarre une vraie
 instance Postgres à chaque lancement via [Testcontainers](https://testcontainers.com/).
+
+Les tests du frontend et du worker se lancent avec `npm test` dans leur dossier respectif.
+
+**Intégration continue** : à chaque push et pull request sur `main`, GitHub Actions
+([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) compile et teste les trois composants
+(backend avec Postgres via Testcontainers, frontend, worker).
 
 ## Protection anti-double-réservation
 
@@ -209,6 +217,12 @@ dotnet test
 
 Docker must be running: the integration test suite spins up a real Postgres instance per test run
 via [Testcontainers](https://testcontainers.com/).
+
+Frontend and worker tests run with `npm test` in their respective folders.
+
+**Continuous integration**: on every push and pull request to `main`, GitHub Actions
+([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) builds and tests all three components
+(backend against Postgres via Testcontainers, frontend, worker).
 
 ## Anti-double-booking protection
 
