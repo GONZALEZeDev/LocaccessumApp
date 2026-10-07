@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend (.NET)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore Locaccessum.sln
+
+      - name: Build
+        run: dotnet build Locaccessum.sln --configuration Release --no-restore
+
+      # Les tests d'intégration démarrent un vrai PostgreSQL via Testcontainers :
+      # Docker est disponible nativement sur les runners ubuntu-latest.
+      - name: Test
+        run: dotnet test Locaccessum.sln --configuration Release --no-build --verbosity normal
+
+  frontend:
+    name: Frontend (React)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Test
+        run: npm test
+
+  worker:
+    name: Worker (Node.js)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: worker
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: worker/package-lock.json
+
+      - run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Typecheck tests
+        run: npm run typecheck:test
+      - name: Test
+        run: npm test
