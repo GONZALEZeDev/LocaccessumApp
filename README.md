@@ -154,9 +154,10 @@ pour les variables d'environnement statiques — à `http://localhost:8080`, c'e
 vue par le navigateur de l'utilisateur, pas l'adresse interne au réseau Docker utilisée par le
 worker.
 
-Le frontend est volontairement simple : thème Tailwind vert pastel, pas d'effets client lourds
-(pas d'animations complexes, pas de gestion d'état globale au-delà du contexte d'authentification),
-conformément aux objectifs de conception du plan.
+Le frontend reste volontairement simple côté logique (pas d'animations complexes, pas de gestion
+d'état globale au-delà du contexte d'authentification), avec une identité visuelle un peu plus
+soignée : vert pin sur fond papier chaud, IBM Plex Sans/Mono (les codes et références en
+police mono), listes en lignes de registre plutôt qu'en cartes.
 
 ### Captures d'écran
 
@@ -322,9 +323,10 @@ then served statically via `nginx:alpine`) and exposed on port `5173`. The API U
 `http://localhost:8080`, i.e. the address as seen by the user's browser, not the Docker-network-
 internal address the worker uses.
 
-The frontend is intentionally simple: a pastel-green Tailwind theme, no heavy client-side effects
-(no complex animations, no global state management beyond the auth context), per this plan's
-design goals.
+The frontend stays intentionally simple on the logic side (no complex animations, no global state
+management beyond the auth context), with a slightly more considered visual identity: pine green
+on a warm paper background, IBM Plex Sans/Mono (codes and references in the mono face), and
+ledger-style bordered rows instead of card grids.
 
 ### Screenshots
 
