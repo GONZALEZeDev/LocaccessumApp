@@ -88,26 +88,33 @@ export function ReservationsTab({ inventoryId }: { inventoryId: string }) {
 
       <ErrorText message={listError} />
 
-      <ul className="space-y-2">
+      <ul className="bg-white border border-line rounded-md divide-y divide-line">
         {reservations.map((r) => (
-          <li key={r.id} className="bg-white rounded-lg shadow p-4 flex items-center justify-between text-sm">
+          <li key={r.id} className="flex items-center justify-between text-sm px-4 py-3">
             <span>
-              <span className="font-medium text-primary-800">{r.equipmentName}</span>{' '}
-              <span className="text-gray-500">({r.reference})</span> — {r.userDisplayName}
+              <span className="font-medium text-ink">{r.equipmentName}</span>{' '}
+              <span className="text-gray-500 font-mono text-xs">{r.reference}</span>
+              <span className="text-gray-500"> — {r.userDisplayName}</span>
               <br />
-              {new Date(r.startsAt).toLocaleString('fr-FR')} → {new Date(r.endsAt).toLocaleString('fr-FR')}
-              {r.status === 'Cancelled' && <span className="text-red-600 ml-2">(annulée)</span>}
+              <span className="text-gray-600">
+                {new Date(r.startsAt).toLocaleString('fr-FR')} → {new Date(r.endsAt).toLocaleString('fr-FR')}
+              </span>
+              {r.status === 'Cancelled' && (
+                <span className="ml-2 text-xs font-medium text-red-700 bg-red-50 px-2 py-0.5 rounded">Annulée</span>
+              )}
             </span>
             {r.status === 'Confirmed' && (
               <Button variant="secondary" onClick={() => handleCancel(r.id)}>Annuler</Button>
             )}
           </li>
         ))}
-        {reservations.length === 0 && <p className="text-sm text-gray-600">Aucune réservation sur cette période.</p>}
+        {reservations.length === 0 && (
+          <li className="px-4 py-3 text-sm text-gray-600">Aucune réservation sur cette période.</li>
+        )}
       </ul>
 
-      <form onSubmit={handleCreate} className="bg-white rounded-lg shadow p-4 space-y-3 max-w-md">
-        <h3 className="font-semibold text-primary-800">Réserver un équipement</h3>
+      <form onSubmit={handleCreate} className="bg-white border border-line rounded-md p-4 space-y-3 max-w-md">
+        <h3 className="text-sm font-semibold text-ink">Réserver un équipement</h3>
         <ErrorText message={formError} />
         <TextField label="Nom de l'équipement" required value={equipmentName} onChange={setEquipmentName} />
         <TextField label="Référence" required value={equipmentReference} onChange={setEquipmentReference} />

@@ -62,29 +62,29 @@ export function InvitationsTab({ inventoryId, canManage }: { inventoryId: string
   return (
     <div className="space-y-6">
       <ErrorText message={error} />
-      <ul className="space-y-2">
+      <ul className="bg-white border border-line rounded-md divide-y divide-line">
         {invitations.map((inv) => (
-          <li key={inv.id} className="bg-white rounded-lg shadow p-4 flex items-center justify-between text-sm">
-            <span>
-              {inv.role} — {inv.status}
+          <li key={inv.id} className="flex items-center justify-between text-sm px-4 py-3">
+            <span className="text-ink">
+              {inv.role} <span className={inv.status === 'Pending' ? 'text-amber-700' : 'text-gray-500'}>— {inv.status}</span>
             </span>
             {inv.status === 'Pending' && (
               <Button variant="secondary" onClick={() => handleRevoke(inv.id)}>Révoquer</Button>
             )}
           </li>
         ))}
-        {invitations.length === 0 && <p className="text-sm text-gray-600">Aucune invitation.</p>}
+        {invitations.length === 0 && <li className="px-4 py-3 text-sm text-gray-600">Aucune invitation.</li>}
       </ul>
 
-      <form onSubmit={handleInvite} className="bg-white rounded-lg shadow p-4 space-y-3 max-w-md">
-        <h3 className="font-semibold text-primary-800">Inviter quelqu'un</h3>
+      <form onSubmit={handleInvite} className="bg-white border border-line rounded-md p-4 space-y-3 max-w-md">
+        <h3 className="text-sm font-semibold text-ink">Inviter quelqu'un</h3>
         <TextField label="Code utilisateur" required value={userCode} onChange={setUserCode} />
-        <label className="block text-sm text-gray-700">
+        <label className="block text-sm font-medium text-ink">
           Rôle
           <select
             value={role}
             onChange={(e) => setRole(e.target.value as InvitableRole)}
-            className="mt-1 w-full rounded border border-gray-300 px-3 py-2"
+            className="mt-1 w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink"
           >
             <option value="Member">Membre</option>
             <option value="Admin">Admin</option>

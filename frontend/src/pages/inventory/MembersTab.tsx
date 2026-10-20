@@ -69,19 +69,20 @@ export function MembersTab({
   return (
     <div className="space-y-6">
       <ErrorText message={error} />
-      <ul className="space-y-2">
+      <ul className="bg-white border border-line rounded-md divide-y divide-line">
         {members.map((m) => (
-          <li key={m.userId} className="bg-white rounded-lg shadow p-4 flex items-center justify-between text-sm">
+          <li key={m.userId} className="flex items-center justify-between text-sm px-4 py-3">
             <span>
-              <span className="font-medium text-primary-800">{m.displayName}</span>{' '}
-              <span className="text-gray-500">({m.userCode})</span> — {m.role}
+              <span className="font-medium text-ink">{m.displayName}</span>{' '}
+              <span className="text-gray-500 font-mono text-xs">{m.userCode}</span>
+              <span className="text-gray-500"> — {m.role}</span>
             </span>
             {canManage && m.role !== 'Owner' && (
               <span className="flex gap-2 items-center">
                 <select
                   value={m.role}
                   onChange={(e) => handleRoleChange(m.userId, e.target.value as 'Admin' | 'Member')}
-                  className="border border-gray-300 rounded px-2 py-1 text-xs"
+                  className="border border-line rounded-md bg-white px-2 py-1 text-xs text-ink"
                 >
                   <option value="Admin">Admin</option>
                   <option value="Member">Membre</option>
@@ -94,8 +95,8 @@ export function MembersTab({
       </ul>
 
       {isOwner && (
-        <form onSubmit={handleTransfer} className="bg-white rounded-lg shadow p-4 space-y-3 max-w-md">
-          <h3 className="font-semibold text-primary-800">Transférer la propriété</h3>
+        <form onSubmit={handleTransfer} className="bg-white border border-line rounded-md p-4 space-y-3 max-w-md">
+          <h3 className="text-sm font-semibold text-ink">Transférer la propriété</h3>
           <TextField label="ID utilisateur du nouveau propriétaire" required value={transferTo} onChange={setTransferTo} />
           <Button type="submit" variant="danger" disabled={transferring}>
             {transferring ? 'Transfert...' : 'Transférer'}

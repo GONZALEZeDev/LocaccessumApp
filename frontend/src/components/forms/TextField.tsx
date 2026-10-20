@@ -9,7 +9,7 @@ interface TextFieldProps {
 
 export function TextField({ label, type = 'text', value, onChange, required, placeholder }: TextFieldProps) {
   return (
-    <label className="block text-sm text-gray-700">
+    <label className="block text-sm font-medium text-ink">
       {label}
       <input
         type={type}
@@ -17,7 +17,7 @@ export function TextField({ label, type = 'text', value, onChange, required, pla
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-1 w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400"
+        className="mt-1 w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-400"
       />
     </label>
   );

@@ -3,7 +3,7 @@ import { NavBar } from './NavBar';
 
 export function AppLayout() {
   return (
-    <div className="min-h-screen bg-primary-50">
+    <div className="min-h-screen bg-canvas">
       <NavBar />
       <main className="max-w-4xl mx-auto px-6 py-8">
         <Outlet />

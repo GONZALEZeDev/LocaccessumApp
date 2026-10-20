@@ -31,26 +31,26 @@ export default function InventoryDetailPage() {
 
   if (!id) return null;
   if (error) return <ErrorText message={error} />;
-  if (!inventory) return <p className="text-primary-700">Chargement...</p>;
+  if (!inventory) return <p className="text-gray-600">Chargement...</p>;
 
   const canManage = inventory.myRole === 'Owner' || inventory.myRole === 'Admin';
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold text-primary-800">{inventory.name}</h1>
+        <h1 className="text-lg font-semibold text-ink">{inventory.name}</h1>
         {inventory.description && <p className="text-sm text-gray-600">{inventory.description}</p>}
       </div>
 
-      <div className="flex gap-1 border-b border-primary-200">
+      <div className="flex gap-1 border-b border-line">
         {TABS.map((t) => (
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
             className={`px-4 py-2 text-sm font-medium ${
               tab === t.id
-                ? 'border-b-2 border-primary-600 text-primary-800'
-                : 'text-gray-500 hover:text-primary-700'
+                ? 'border-b-2 border-primary-600 text-ink'
+                : 'text-gray-500 hover:text-ink'
             }`}
           >
             {t.label}

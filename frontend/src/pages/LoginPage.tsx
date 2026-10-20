@@ -29,9 +29,12 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-primary-50">
-      <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-8 w-full max-w-sm space-y-4">
-        <h1 className="text-xl font-semibold text-primary-800">Connexion</h1>
+    <div className="min-h-screen flex items-center justify-center bg-canvas">
+      <form onSubmit={handleSubmit} className="bg-white border border-line rounded-lg shadow-sm p-8 w-full max-w-sm space-y-4">
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-primary-600" aria-hidden="true" />
+          <h1 className="text-lg font-semibold text-ink">Connexion</h1>
+        </div>
         <ErrorText message={error} />
         <TextField label="Email" type="email" required value={email} onChange={setEmail} />
         <TextField label="Mot de passe" type="password" required value={password} onChange={setPassword} />
@@ -39,7 +42,7 @@ export default function LoginPage() {
           {submitting ? 'Connexion...' : 'Se connecter'}
         </Button>
         <p className="text-sm text-gray-600 text-center">
-          Pas de compte ? <Link to="/register" className="text-primary-700 underline">S'inscrire</Link>
+          Pas de compte ? <Link to="/register" className="text-primary-600 hover:text-primary-700 underline">S'inscrire</Link>
         </p>
       </form>
     </div>

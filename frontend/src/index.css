@@ -1,18 +1,36 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary-50: #f4faf3;
-  --color-primary-100: #e6f5e3;
-  --color-primary-200: #cceac6;
-  --color-primary-300: #a8d9a0;
-  --color-primary-400: #8ac77e;
-  --color-primary-500: #6fb161;
-  --color-primary-600: #5a9750;
-  --color-primary-700: #487a40;
-  --color-primary-800: #3a6234;
-  --color-primary-900: #2f4f2a;
+  /* Pine green — anchored at 600, the main interactive shade (buttons, links). */
+  --color-primary-50: #f2f6f1;
+  --color-primary-100: #e4eee6;
+  --color-primary-200: #c9decc;
+  --color-primary-300: #a3c6a9;
+  --color-primary-400: #78a982;
+  --color-primary-500: #4f8a60;
+  --color-primary-600: #2f6e4f;
+  --color-primary-700: #255a40;
+  --color-primary-800: #1d4733;
+  --color-primary-900: #163828;
+
+  /* Amber — reserved for the "Maintenance" equipment status and pending states. */
+  --color-amber-50: #fbf3e7;
+  --color-amber-100: #f5e2c4;
+  --color-amber-600: #c98a2c;
+  --color-amber-700: #a86f1f;
+
+  /* Warm paper canvas, ink text, and hairline rules — the ledger surface. */
+  --color-canvas: #f7f6f2;
+  --color-ink: #1c2321;
+  --color-line: #ddd9ce;
+
+  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
 }
 
 body {
   margin: 0;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
 }

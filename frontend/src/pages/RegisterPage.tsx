@@ -30,9 +30,12 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-primary-50">
-      <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-8 w-full max-w-sm space-y-4">
-        <h1 className="text-xl font-semibold text-primary-800">Inscription</h1>
+    <div className="min-h-screen flex items-center justify-center bg-canvas">
+      <form onSubmit={handleSubmit} className="bg-white border border-line rounded-lg shadow-sm p-8 w-full max-w-sm space-y-4">
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-primary-600" aria-hidden="true" />
+          <h1 className="text-lg font-semibold text-ink">Inscription</h1>
+        </div>
         <ErrorText message={error} />
         <TextField label="Nom affiché" required value={displayName} onChange={setDisplayName} />
         <TextField label="Email" type="email" required value={email} onChange={setEmail} />
@@ -41,7 +44,7 @@ export default function RegisterPage() {
           {submitting ? 'Inscription...' : "S'inscrire"}
         </Button>
         <p className="text-sm text-gray-600 text-center">
-          Déjà un compte ? <Link to="/login" className="text-primary-700 underline">Se connecter</Link>
+          Déjà un compte ? <Link to="/login" className="text-primary-600 hover:text-primary-700 underline">Se connecter</Link>
         </p>
       </form>
     </div>

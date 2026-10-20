@@ -79,13 +79,13 @@ export default function DashboardPage() {
       {loadError && <ErrorText message={loadError} />}
 
       {invitations.length > 0 && (
-        <section className="bg-white rounded-lg shadow p-4">
-          <h2 className="font-semibold text-primary-800 mb-2">Invitations reçues</h2>
-          <ul className="space-y-2">
+        <section>
+          <h2 className="text-sm font-semibold text-ink mb-2">Invitations reçues</h2>
+          <ul className="bg-white border border-line rounded-md divide-y divide-line">
             {invitations.map((inv) => (
-              <li key={inv.id} className="flex items-center justify-between text-sm">
-                <span>
-                  {inv.inventoryName} — rôle {inv.role}
+              <li key={inv.id} className="flex items-center justify-between text-sm px-4 py-3">
+                <span className="text-ink">
+                  {inv.inventoryName} <span className="text-gray-500">— rôle {inv.role}</span>
                 </span>
                 <span className="flex gap-2">
                   <Button variant="primary" onClick={() => handleAccept(inv.id)}>Accepter</Button>
@@ -98,27 +98,29 @@ export default function DashboardPage() {
       )}
 
       <section>
-        <h1 className="text-xl font-semibold text-primary-800 mb-4">Mes inventaires</h1>
-        <ul className="space-y-2">
+        <h1 className="text-lg font-semibold text-ink mb-3">Mes inventaires</h1>
+        <ul className="bg-white border border-line rounded-md divide-y divide-line">
           {inventories.map((inv) => (
             <li key={inv.id}>
               <Link
                 to={`/inventories/${inv.id}`}
-                className="block bg-white rounded-lg shadow p-4 hover:bg-primary-50"
+                className="block px-4 py-3 hover:bg-primary-50"
               >
-                <span className="font-medium text-primary-800">{inv.name}</span>
-                <span className="text-sm text-gray-600 ml-2">
+                <span className="font-medium text-ink">{inv.name}</span>
+                <span className="text-sm text-gray-500 ml-2">
                   ({inv.myRole}, {inv.memberCount} membre{inv.memberCount > 1 ? 's' : ''})
                 </span>
               </Link>
             </li>
           ))}
-          {inventories.length === 0 && <p className="text-sm text-gray-600">Aucun inventaire pour le moment.</p>}
+          {inventories.length === 0 && (
+            <li className="px-4 py-3 text-sm text-gray-600">Aucun inventaire pour le moment.</li>
+          )}
         </ul>
       </section>
 
-      <section className="bg-white rounded-lg shadow p-4">
-        <h2 className="font-semibold text-primary-800 mb-2">Créer un inventaire</h2>
+      <section className="bg-white border border-line rounded-md p-4">
+        <h2 className="text-sm font-semibold text-ink mb-2">Créer un inventaire</h2>
         <form onSubmit={handleCreate} className="space-y-3">
           <ErrorText message={formError} />
           <TextField label="Nom" required value={name} onChange={setName} />
