@@ -89,6 +89,14 @@ Variables d'environnement (voir `.env.example`) :
 | `REMINDER_WINDOW_HOURS` | Fenêtre (en heures) avant le début d'une réservation pour déclencher le rappel, 24 par défaut |
 | `CRON_SCHEDULE` | Expression cron de la planification d'exécution du worker, toutes les heures par défaut |
 
+> ⚠️ **Avant un déploiement réel** (même une démo publique) : `Jwt__Secret` et `InternalApiKey`
+> doivent être remplacés par des valeurs aléatoires fortes (ex. `openssl rand -hex 32`) dans le
+> `.env` de cet environnement. Les valeurs du `.env.example` sont des placeholders volontairement
+> publics — tant que l'app ne tourne qu'en local (`localhost`), ça ne présente aucun risque, mais
+> un attaquant qui connaît ces valeurs peut forger un token JWT valide pour n'importe quel compte
+> sans connaître son mot de passe. Ne pas modifier `.env.example` lui-même : il doit rester avec
+> des valeurs factices pour documenter la configuration attendue.
+
 ## Worker de rappels
 
 Le worker de rappels (`worker/`) est un service Node.js/TypeScript qui tourne indépendamment de
@@ -253,6 +261,13 @@ Environment variables (see `.env.example`):
 | `MAIL_FROM` | Sender address for reminder e-mails |
 | `REMINDER_WINDOW_HOURS` | Hours-ahead window before a reservation start to trigger the reminder, default 24 |
 | `CRON_SCHEDULE` | Cron expression for the worker's run schedule, hourly by default |
+
+> ⚠️ **Before any real deployment** (even a public demo): `Jwt__Secret` and `InternalApiKey` must
+> be replaced with strong random values (e.g. `openssl rand -hex 32`) in that environment's `.env`.
+> The `.env.example` values are deliberately public placeholders — as long as the app only runs
+> locally (`localhost`), this is harmless, but anyone who knows these values can forge a valid JWT
+> for any account without knowing its password. Don't edit `.env.example` itself: it should keep
+> dummy values so it documents the expected configuration.
 
 ## Reminder worker
 
