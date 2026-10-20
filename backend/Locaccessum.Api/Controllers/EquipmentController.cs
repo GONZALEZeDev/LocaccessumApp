@@ -33,7 +33,7 @@ public class EquipmentController(LocaccessumDbContext db, ICurrentUser currentUs
             InventoryId = inventoryId,
             Name = req.Name.Trim(),
             Reference = req.Reference.Trim(),
-            Informations = req.Informations,
+            Informations = TextSanitizer.StripHtmlTags(req.Informations),
             Status = status,
             CreatedAt = DateTimeOffset.UtcNow,
         };
@@ -152,7 +152,7 @@ public class EquipmentController(LocaccessumDbContext db, ICurrentUser currentUs
 
         if (req.Informations is not null)
         {
-            equipment.Informations = req.Informations;
+            equipment.Informations = TextSanitizer.StripHtmlTags(req.Informations);
         }
 
         if (req.Status is not null)

@@ -37,6 +37,20 @@ public class RegisterTests(PostgresFixture fx) : IntegrationTest(fx)
         res.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
+    /// <summary>
+    /// Security review finding: no cap on password length let a request carry an arbitrarily large
+    /// payload into the PBKDF2 hasher. 128 chars is generous for any real password while bounding the
+    /// work a single request can force the server to do.
+    /// </summary>
+    [Fact]
+    public async Task Register_with_overlong_password_is_400()
+    {
+        var res = await Client.PostAsJsonAsync("/api/auth/register",
+            new { email = "longpw@x.io", password = new string('a', 129), displayName = "X" });
+
+        res.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
     /// <summary>Shares the "auth" rate-limit policy with login (see LoginTests) so a single client can't
     /// sidestep the login throttle by hammering registration instead.</summary>
     [Fact]

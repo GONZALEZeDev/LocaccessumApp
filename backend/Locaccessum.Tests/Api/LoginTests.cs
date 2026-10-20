@@ -53,6 +53,17 @@ public class LoginTests(PostgresFixture fx) : IntegrationTest(fx)
         body.GetProperty("code").GetString().Should().Be("INVALID_CREDENTIALS");
     }
 
+    /// <summary>Same cap as registration (see RegisterTests) — login's hasher.Verify call does the
+    /// same PBKDF2 work per request, so it needs the same bound.</summary>
+    [Fact]
+    public async Task Login_with_overlong_password_is_400()
+    {
+        var res = await Client.PostAsJsonAsync("/api/auth/login",
+            new { email = "someone@x.io", password = new string('a', 129) });
+
+        res.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
     /// <summary>
     /// Security review finding: unlimited login attempts allowed a password brute-force with no
     /// friction. The "auth" rate-limit policy caps attempts per client; the 11th rapid call in the

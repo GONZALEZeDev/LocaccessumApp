@@ -14,18 +14,53 @@ namespace Locaccessum.Tests.Api;
 public class EquipmentTests(PostgresFixture fx) : IntegrationTest(fx)
 {
     [Fact]
-    public async Task Create_stores_informations_verbatim_and_defaults_status_active()
+    public async Task Create_stores_plain_informations_verbatim_and_defaults_status_active()
     {
         var (_, ownerToken) = await Register("owner-eq1@x.io");
         var invId = await CreateInventory(ownerToken, "EqTeam1");
         var ownerClient = await AuthedClient(ownerToken);
 
         var res = await ownerClient.PostAsJsonAsync($"/api/inventories/{invId}/equipment",
-            new { name = "Projecteur", reference = "EPSON-EB", informations = "<b>220V</b>" });
+            new { name = "Projecteur", reference = "EPSON-EB", informations = "Tension < 230V, garder au sec." });
         res.StatusCode.Should().Be(HttpStatusCode.Created);
         var body = await res.Content.ReadFromJsonAsync<EquipmentResponse>();
-        body!.Informations.Should().Be("<b>220V</b>");
+        body!.Informations.Should().Be("Tension < 230V, garder au sec.");
         body.Status.Should().Be("Active");
+    }
+
+    /// <summary>
+    /// Security review finding: this field was stored and echoed back verbatim with no sanitization.
+    /// The current React frontend happens to render it as inert text today, but the API itself
+    /// shouldn't rely on every future consumer getting that right — tags are stripped at write time
+    /// (inner text kept, so "&lt;b&gt;220V&lt;/b&gt;" becomes "220V" rather than being rejected).
+    /// </summary>
+    [Fact]
+    public async Task Create_strips_html_tags_from_informations()
+    {
+        var (_, ownerToken) = await Register("owner-eq10@x.io");
+        var invId = await CreateInventory(ownerToken, "EqTeam10");
+        var ownerClient = await AuthedClient(ownerToken);
+
+        var res = await ownerClient.PostAsJsonAsync($"/api/inventories/{invId}/equipment",
+            new { name = "Projecteur", reference = "EPSON-EB", informations = "<script>alert(document.cookie)</script>" });
+        res.StatusCode.Should().Be(HttpStatusCode.Created);
+        var body = await res.Content.ReadFromJsonAsync<EquipmentResponse>();
+        body!.Informations.Should().Be("alert(document.cookie)");
+    }
+
+    [Fact]
+    public async Task Patch_strips_html_tags_from_informations()
+    {
+        var (_, ownerToken) = await Register("owner-eq11@x.io");
+        var invId = await CreateInventory(ownerToken, "EqTeam11");
+        var ownerClient = await AuthedClient(ownerToken);
+        var create = await ownerClient.PostAsJsonAsync($"/api/inventories/{invId}/equipment", new { name = "Camera", reference = "SONY-A7" });
+        var eq = await create.Content.ReadFromJsonAsync<EquipmentResponse>();
+
+        var patch = await ownerClient.PatchAsJsonAsync($"/api/equipment/{eq!.Id}", new { informations = "<img src=x onerror=alert(1)>Notes" });
+        patch.StatusCode.Should().Be(HttpStatusCode.OK);
+        var body = await patch.Content.ReadFromJsonAsync<EquipmentResponse>();
+        body!.Informations.Should().Be("Notes");
     }
 
     [Fact]
