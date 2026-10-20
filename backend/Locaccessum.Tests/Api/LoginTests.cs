@@ -52,4 +52,22 @@ public class LoginTests(PostgresFixture fx) : IntegrationTest(fx)
         var body = await res.Content.ReadFromJsonAsync<System.Text.Json.JsonElement>();
         body.GetProperty("code").GetString().Should().Be("INVALID_CREDENTIALS");
     }
+
+    /// <summary>
+    /// Security review finding: unlimited login attempts allowed a password brute-force with no
+    /// friction. The "auth" rate-limit policy caps attempts per client; the 11th rapid call in the
+    /// same window must be rejected with 429 rather than evaluated as another credential check.
+    /// </summary>
+    [Fact]
+    public async Task Login_is_rate_limited_after_too_many_attempts()
+    {
+        HttpResponseMessage? last = null;
+        for (var i = 0; i < 11; i++)
+        {
+            last = await Client.PostAsJsonAsync("/api/auth/login",
+                new { email = "rate-limit-probe@x.io", password = "wrong-password" });
+        }
+
+        last!.StatusCode.Should().Be((HttpStatusCode)429);
+    }
 }

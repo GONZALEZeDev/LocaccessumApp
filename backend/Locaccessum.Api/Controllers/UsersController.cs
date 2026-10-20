@@ -18,7 +18,15 @@ public class UsersController(LocaccessumDbContext db, ICurrentUser currentUser) 
     {
         var user = await db.Users.FindAsync(currentUser.Id);
 
-        return Ok(new UserResponse(user!.Id, user.Email, user.DisplayName, user.UserCode, user.CreatedAt));
+        // The JWT's subject can outlive the row it names (account deleted after the token was
+        // issued, or a token forged/replayed for an id that was never real) — treat that as an
+        // authentication failure, not a server error.
+        if (user is null)
+        {
+            return ApiProblem.Unauthorized("USER_NOT_FOUND", "Your account no longer exists.");
+        }
+
+        return Ok(new UserResponse(user.Id, user.Email, user.DisplayName, user.UserCode, user.CreatedAt));
     }
 
     [HttpGet("search")]

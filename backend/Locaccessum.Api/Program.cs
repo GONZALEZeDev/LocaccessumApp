@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Threading.RateLimiting;
 using Locaccessum.Api.Abstractions;
 using Locaccessum.Api.Authorization;
 using Locaccessum.Api.Common;
@@ -10,6 +11,7 @@ using Locaccessum.Infrastructure.Identity;
 using Locaccessum.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,6 +37,35 @@ builder.Services.AddCors(o => o.AddDefaultPolicy(p => p
     .AllowAnyMethod()));
 builder.Services.AddProblemDetails();
 
+// Throttles unauthenticated credential-guessing against login/register: 10 attempts per client per
+// minute, shared between the two routes so one can't be used to dodge the other's limit. Keyed by
+// remote IP — if this ever sits behind a reverse proxy, that proxy's forwarded-for header needs to
+// be wired up (app.UseForwardedHeaders) for the key to reflect the real client instead of the proxy.
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.OnRejected = async (context, ct) =>
+    {
+        context.HttpContext.Response.ContentType = "application/problem+json";
+        await context.HttpContext.Response.WriteAsJsonAsync(new
+        {
+            type = "https://tools.ietf.org/html/rfc9110#section-15.5.20",
+            title = "Too Many Requests",
+            status = StatusCodes.Status429TooManyRequests,
+            detail = "Too many attempts. Please wait before retrying.",
+            code = "RATE_LIMITED",
+        }, ct);
+    };
+    options.AddPolicy("auth", httpContext => RateLimitPartition.GetFixedWindowLimiter(
+        partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        factory: _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 10,
+            Window = TimeSpan.FromMinutes(1),
+            QueueLimit = 0,
+        }));
+});
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -49,7 +80,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseExceptionHandler();
+app.UseSecurityHeaders();
 app.UseCors();
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 

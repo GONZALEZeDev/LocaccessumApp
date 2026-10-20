@@ -5,6 +5,7 @@ using Locaccessum.Infrastructure.Auth;
 using Locaccessum.Infrastructure.Identity;
 using Locaccessum.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
@@ -19,6 +20,7 @@ public class AuthController(
     IJwtTokenService jwt) : ControllerBase
 {
     [HttpPost("register")]
+    [EnableRateLimiting("auth")]
     public async Task<IActionResult> Register(RegisterRequest req)
     {
         var email = req.Email.Trim().ToLowerInvariant();
@@ -55,6 +57,7 @@ public class AuthController(
     }
 
     [HttpPost("login")]
+    [EnableRateLimiting("auth")]
     public async Task<IActionResult> Login(LoginRequest req)
     {
         var email = req.Email.Trim().ToLowerInvariant();
