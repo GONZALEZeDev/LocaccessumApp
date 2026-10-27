@@ -220,6 +220,11 @@ namespace Locaccessum.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("equipment_id");
 
+                    b.Property<string>("Note")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("note");
+
                     b.Property<DateTimeOffset?>("ReminderSentAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("reminder_sent_at");

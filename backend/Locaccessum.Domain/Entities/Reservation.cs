@@ -15,6 +15,7 @@ public class Reservation
     public DateTimeOffset? ReminderSentAt { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset? CancelledAt { get; set; }
+    public string? Note { get; set; }
 
     public static bool Overlaps(DateTimeOffset aStart, DateTimeOffset aEnd, DateTimeOffset bStart, DateTimeOffset bEnd)
         => aStart < bEnd && aEnd > bStart;

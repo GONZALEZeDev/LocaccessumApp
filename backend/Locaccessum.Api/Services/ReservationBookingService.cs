@@ -1,3 +1,4 @@
+using Locaccessum.Api.Common;
 using Locaccessum.Api.Contracts.Reservations;
 using Locaccessum.Domain.Entities;
 using Locaccessum.Domain.Enums;
@@ -118,7 +119,8 @@ public class ReservationBookingService(LocaccessumDbContext db)
             StartsAt = req.StartsAt,
             EndsAt = req.EndsAt,
             Status = ReservationStatus.Confirmed,
-            CreatedAt = DateTimeOffset.UtcNow
+            CreatedAt = DateTimeOffset.UtcNow,
+            Note = TextSanitizer.StripHtmlTags(req.Note)
         };
         db.Reservations.Add(reservation);
 

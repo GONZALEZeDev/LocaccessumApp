@@ -46,7 +46,8 @@ public class ReservationsController(LocaccessumDbContext db, ReservationBookingS
                 r.User.DisplayName,
                 r.StartsAt,
                 r.EndsAt,
-                r.Status.ToString()))
+                r.Status.ToString(),
+                r.Note))
             .ToListAsync();
 
         return Ok(items);
@@ -64,7 +65,7 @@ public class ReservationsController(LocaccessumDbContext db, ReservationBookingS
                     .Include(r => r.Equipment)
                     .Include(r => r.User)
                     .SingleAsync(r => r.Id == booked.Reservation.Id, ct);
-                return StatusCode(201, new ReservationResponse(full.Id, full.EquipmentId, full.Equipment.Name, full.Equipment.Reference, full.UserId, full.User.DisplayName, full.StartsAt, full.EndsAt, full.Status.ToString()));
+                return StatusCode(201, new ReservationResponse(full.Id, full.EquipmentId, full.Equipment.Name, full.Equipment.Reference, full.UserId, full.User.DisplayName, full.StartsAt, full.EndsAt, full.Status.ToString(), full.Note));
             case BookingResult.StackFull sf:
                 var pd = new ProblemDetails { Status = 409, Detail = "No free unit for the requested time range." };
                 pd.Extensions["code"] = "STACK_FULL";
@@ -104,6 +105,28 @@ public class ReservationsController(LocaccessumDbContext db, ReservationBookingS
         await db.SaveChangesAsync(ct);
 
         var full = await db.Reservations.Include(r => r.Equipment).Include(r => r.User).SingleAsync(r => r.Id == id, ct);
-        return Ok(new ReservationResponse(full.Id, full.EquipmentId, full.Equipment.Name, full.Equipment.Reference, full.UserId, full.User.DisplayName, full.StartsAt, full.EndsAt, full.Status.ToString()));
+        return Ok(new ReservationResponse(full.Id, full.EquipmentId, full.Equipment.Name, full.Equipment.Reference, full.UserId, full.User.DisplayName, full.StartsAt, full.EndsAt, full.Status.ToString(), full.Note));
+    }
+
+    [HttpPatch("/api/reservations/{id:guid}/note")]
+    [Authorize]
+    public async Task<IActionResult> UpdateNote(Guid id, UpdateReservationNoteRequest req, CancellationToken ct)
+    {
+        var reservation = await db.Reservations.Include(r => r.Equipment).SingleOrDefaultAsync(r => r.Id == id, ct);
+        if (reservation is null) return ApiProblem.NotFound("RESERVATION_NOT_FOUND", "Reservation not found.");
+
+        var allowed = reservation.UserId == currentUser.Id;
+        if (!allowed)
+        {
+            var role = await roleHandler.ResolveRoleAsync(reservation.Equipment.InventoryId, currentUser.Id);
+            allowed = role is MembershipRole.Admin or MembershipRole.Owner;
+        }
+        if (!allowed) return ApiProblem.Forbidden("CANNOT_EDIT_NOTE", "You cannot edit this reservation's note.");
+
+        reservation.Note = TextSanitizer.StripHtmlTags(req.Note);
+        await db.SaveChangesAsync(ct);
+
+        var full = await db.Reservations.Include(r => r.Equipment).Include(r => r.User).SingleAsync(r => r.Id == id, ct);
+        return Ok(new ReservationResponse(full.Id, full.EquipmentId, full.Equipment.Name, full.Equipment.Reference, full.UserId, full.User.DisplayName, full.StartsAt, full.EndsAt, full.Status.ToString(), full.Note));
     }
 }

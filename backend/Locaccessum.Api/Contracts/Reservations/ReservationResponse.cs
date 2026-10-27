@@ -9,4 +9,5 @@ public record ReservationResponse(
     string UserDisplayName,
     DateTimeOffset StartsAt,
     DateTimeOffset EndsAt,
-    string Status);
+    string Status,
+    string? Note);
